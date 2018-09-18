@@ -21,10 +21,8 @@ export default {
   padding: 200rpx 0;
   box-sizing: border-box;
 } */
-.van-card {
-  width: 750rpx;
-  margin-bottom: 30rpx;
-}
+
+
 /* this rule will be remove */
 * {
   transition: width 2s;
