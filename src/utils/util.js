@@ -1,4 +1,4 @@
-import wx from 'wx'
+// import wx from 'wx'
 import api from '@/utils/api'
 
 function formatTime (date) {
@@ -14,6 +14,24 @@ function formatTime (date) {
 function formatNumber (n) {
   n = n.toString()
   return n[1] ? n : '0' + n
+}
+
+export function deepClone (obj) {
+  let objClone = Array.isArray(obj) ? [] : {}
+  if (obj && typeof obj === 'object') {
+    for (let key in obj) {
+      if (obj.hasOwnProperty(key)) {
+        // 判断ojb子元素是否为对象，如果是，递归复制
+        if (obj[key] && typeof obj[key] === 'object') {
+          objClone[key] = deepClone(obj[key])
+        } else {
+          // 如果不是，简单复制
+          objClone[key] = obj[key]
+        }
+      }
+    }
+  }
+  return objClone
 }
 /**
  * 封封微信的的request
@@ -77,18 +95,18 @@ function request (url, data = {}, method = 'GET') {
 /**
  * 检查微信会话是否过期
  */
-function checkSession () {
-  return new Promise(function (resolve, reject) {
-    wx.checkSession({
-      success: function () {
-        resolve(true)
-      },
-      fail: function () {
-        reject(false)
-      }
-    })
-  })
-}
+// function checkSession () {
+//   return new Promise(function (resolve, reject) {
+//     wx.checkSession({
+//       success: function () {
+//         resolve(true)
+//       },
+//       fail: function () {
+//         reject(false)
+//       }
+//     })
+//   })
+// }
 /**
  * 调用微信登录
  */
@@ -165,7 +183,7 @@ const util = {
   request,
   redirect,
   showErrorToast,
-  checkSession,
+  // checkSession,
   login,
   getUserInfo
 }

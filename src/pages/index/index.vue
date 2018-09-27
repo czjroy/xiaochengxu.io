@@ -1,48 +1,32 @@
 <template>
   <div class="container" >
-
-    <!-- <div class="userinfo" @click="bindViewTap">
-      <img class="userinfo-avatar" v-if="userInfo.avatarUrl" :src="userInfo.avatarUrl" background-size="cover" />
-      <div class="userinfo-nickname">
-        <card :text="userInfo.nickName"></card>
-      </div>
-    </div>
-
-    <div class="usermotto">
-      <div class="user-motto">
-        <card :text="motto"></card>
-      </div>
-    </div>
-
-    <form class="form-container">
-      <input type="text" class="form-control" v-model="motto" placeholder="v-model" />
-      <input type="text" class="form-control" v-model.lazy="motto" placeholder="v-model.lazy" />
-    </form>
-    <a href="/pages/counter/main" class="counter">去往Vuex示例页面</a> -->
-
-     <!-- 组件在main.json中引入 -->
-    <!-- <van-button @click="onClick">按钮</van-button>
-    <van-notify id="van-notify" /> -->
-
     <view class="search">
       <view class="search-result">
-       
-          <template v-for="items in list">
-            
-            <van-card
-              :key="items.id"
-              :title="items.title"
-              :desc="items.intro"
-              :thumb="items.logo"
-              @click="clickHandle(items.id, $event)"
-              desc-class="desc"
-            />
-          </template>
-          <view class="loading" :hidden="!searchLoading">正在载入更多...</view>
-          <view class="loading complete" :hidden="!searchLoadingComplete">已加载全部</view>
-        
+        <template v-for="items in list">
+          <div class="index-card" @click="clickHandle(items.id)" :key="items.id">
+            <div class="imgbox"><img :src="items.logo" /></div>
+            <div class="middle" style="padding: 0px 8px;">
+                <div>
+                    <h4>{{items.title}}</h4>
+                </div>
+                <div class="desc" >{{items.intro}}</div>
+            </div>
+            <div class="to-right" >
+                <van-icon name="arrow" />
+            </div>
+          </div>
+        </template>
+        <view class="loading" :hidden="!searchLoading" ><van-loading  size="15px"/> <span>正在载入更多...</span></view>
+        <view class="loading complete" :hidden="!searchLoadingComplete">已加载全部</view>
+          <!-- <div v-html="html"></div> -->
       </view>
     </view>
+    <van-tabbar :active="active" >
+      <van-tabbar-item icon="wap-home">首页</van-tabbar-item>
+      <van-tabbar-item icon="search" >搜索</van-tabbar-item>
+      <van-tabbar-item icon="chat" info="5">消息</van-tabbar-item>
+      <van-tabbar-item icon="contact" dot>我</van-tabbar-item>
+    </van-tabbar>
   </div>
   
 </template>
@@ -53,69 +37,55 @@ import Notify from '@/../static/vant/notify/notify'
 import api from '@/api/index'
 
 export default {
+  components: {
+    card
+  },
   data () {
     return {
-
+      active: 0,
+      html: `<div>123123 <br /> <img src="http://jgbackend.oss-cn-shanghai.aliyuncs.com/bi/images/2018091114392369856.png" alt="12"></div>`,
       list: [],
       isloading: true, // 用于判断searchSongList数组是不是空数组，默认true，空的数组
       searchLoading: true, // "上拉加载"的变量，默认false，隐藏
       searchLoadingComplete: false // “没有数据”的变量，默认false，隐藏
-
     }
+  },
+
+  async onPullDownRefresh () {
+    api.getalist().then(r => {
+      console.log(r)
+      this.list = r.data
+      this.searchLoadingComplete = false
+      this.searchScrollLower()
+      wx.stopPullDownRefresh()
+    })
   },
   onReachBottom () {
-    console.log('23423234234234234234234234')
-    this.searchLoading = true
-    if (this.searchLoadingComplete) {
-      this.searchLoading = false
-      return
-    }
-    if (this.isloading) {
-      this.searchLoading = true
-      this.isloading = false
-      setTimeout(() => {
-        api.getalist().then(r => {
-          if (r.more) {
-            this.list = this.list.concat(r.data)
-          } else {
-            this.searchLoadingComplete = true
-          }
-          this.searchLoading = false
-          this.isloading = true
-        })
-      }, 1000)
-    }
+    this.searchScrollLower()
   },
-
-  components: {
-    card
-  },
-  // created (){
-  //   this.getalist()
-  // },
   methods: {
-    // searchScrollLower (e) {
-    //   this.searchLoading = true
-    //   if (this.searchLoadingComplete) {
-    //     this.searchLoading = false
-    //     return
-    //   }
-    //   if (this.isloading) {
-    //     this.searchLoading = true
-    //     this.isloading = false
-    //     setTimeout(() => {
-    //       api.getalist().then(r => {
-    //         if (r.more) {
-    //           this.list = this.list.concat(r.data)
-    //         } else {
-    //           this.searchLoadingComplete = true
-    //         }
-    //         this.searchLoading = false
-    //         this.isloading = true
-    //       })
-    //     }, 1000)
-    //   }
-    // },
+    searchScrollLower (e) {
+      this.searchLoading = true
+      if (this.searchLoadingComplete) {
+        this.searchLoading = false
+        return
+      }
+      if (this.isloading) {
+        this.searchLoading = true
+        this.isloading = false
+        setTimeout(() => {
+          api.getalist().then(r => {
+            if (r.more) {
+              this.list = this.list.concat(r.data)
+            } else {
+              this.searchLoadingComplete = true
+            }
+            this.searchLoading = false
+            this.isloading = true
+          })
+        }, 1000)
+      }
+    },
     getList () {
       api.getalist().then(r => {
         console.log(r)
@@ -142,113 +112,81 @@ export default {
       })
     },
     clickHandle (msg, ev) {
-      console.log('clickHandle:', msg, ev)
-      this.$router.push({ path: '/pages/counter/main', query: { id: msg } })
+      console.log('clickHandle:', msg)
+      this.$router.push({ path: '/pages/community/main', query: { id: msg } })
     }
   },
-  onShow () {
-    console.log(123123213)
-  },
-
   async mounted () {
     // 调用应用实例的方法获取全局数据
     this.getUserInfo()
-    // this.getList()
+    this.getList()
+    this.searchScrollLower()
     console.log(this.$route)
   },
 
   created () {
-    this.getList()
+
   }
 }
 </script>
 
-<style>
-/* page{
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-} */
-</style>
 
-<style scoped>
-
-.container {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-
+<style lang="scss" scoped>
+.container{
+  padding-bottom:50px;
 }
-
-.userinfo-avatar {
-  width: 128rpx;
-  height: 128rpx;
-  margin: 20rpx;
-  border-radius: 50%;
-}
-
-/* .search{
-  flex: auto;
-  display: flex;
-  flex-direction: column;
-  background: #fff;
-
-}
-
-
-.search-result{
-  
-  flex: auto;
-  position: relative;
-}
-.search-result scroll-view{
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  top: 0;
-} */
-.userinfo-nickname {
-  color: #aaa;
-}
-
-.usermotto {
-  margin-top: 150px;
-}
-
-
-
 .loading{
-  padding: 10rpx;
   text-align: center;
-}
-.loading:before{
-  display: inline-block;
-  margin-right: 5rpx;
-  vertical-align: middle;
-  content: '';
-  width: 40rpx;
-  height: 40rpx;
-  /* background: url(../../images/icon-loading.png) no-repeat; */
-  background-size: contain;
-  animation: rotate 1s linear infinite;
-}
-.loading.complete:before{
-  display: none;
+  font-size: 14px;
+  padding: 10px 0;
+  color: #999;
+  
+  span{
+    vertical-align: middle;
+    padding-left: 8px;
+  }
 }
 
-.form-control {
-  display: block;
-  padding: 0 12px;
-  margin-bottom: 5px;
-  border: 1px solid #ccc;
+.index-card {
+  padding: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  background: #fff;
+  border-bottom: 1rpx solid #ebebeb;
+  font-size: 0;
+
+  .imgbox{
+    flex: 0 1 auto;
+    img{
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+    }
+
+  }
+
+  .middle{
+    flex: 1 1 0%;
+
+    h4{
+      font-size: 16px;
+      color: #666;
+    }
+
+    .desc{
+      color: #999;
+      font-size: 12px;
+    }
+
+  }
+  .to-right{
+    flex: 0 1 auto;
+    display: flex;
+    align-items: center;
+    font-size: 12px;
+    color: #777;
+  }
 }
 
-.counter {
-  display: inline-block;
-  margin: 10px auto;
-  padding: 5px 10px;
-  color: blue;
-  border: 1px solid blue;
-}
 </style>

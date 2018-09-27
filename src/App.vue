@@ -23,6 +23,14 @@ export default {
 } */
 
 
+.van-tabbar{
+  border-top: 1rpx solid #e2e2e2;
+}
+
+page{
+  background: #f8f8f8;
+}
+
 /* this rule will be remove */
 * {
   transition: width 2s;

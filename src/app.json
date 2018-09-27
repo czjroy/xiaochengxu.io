@@ -1,7 +1,9 @@
 {
   "pages": [
+    "pages/community/main",
     "pages/index/main",
     "pages/logs/main",
+    "pages/content/main",
     "pages/counter/main"
   ],
   "window": {
