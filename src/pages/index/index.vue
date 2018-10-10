@@ -1,34 +1,37 @@
 <template>
-  <div class="container" >
+  <div class="container">
     <view class="search">
       <view class="search-result">
         <template v-for="items in list">
           <div class="index-card" @click="clickHandle(items.id)" :key="items.id">
             <div class="imgbox"><img :src="items.logo" /></div>
             <div class="middle" style="padding: 0px 8px;">
-                <div>
-                    <h4>{{items.title}}</h4>
-                </div>
-                <div class="desc" >{{items.intro}}</div>
+              <div>
+                <h4>{{items.title}}</h4>
+              </div>
+              <div class="desc">{{items.intro}}</div>
             </div>
-            <div class="to-right" >
-                <van-icon name="arrow" />
+            <div class="to-right">
+              <van-icon name="arrow" />
             </div>
           </div>
         </template>
-        <view class="loading" :hidden="!searchLoading" ><van-loading  size="15px"/> <span>正在载入更多...</span></view>
+        <view class="loading" :hidden="!searchLoading">
+          <van-loading size="15px" />
+          <span>正在载入更多...</span>
+        </view>
         <view class="loading complete" :hidden="!searchLoadingComplete">已加载全部</view>
-          <!-- <div v-html="html"></div> -->
+        <!-- <div v-html="html"></div> -->
       </view>
     </view>
-    <van-tabbar :active="active" >
+    <van-tabbar :active="active">
       <van-tabbar-item icon="wap-home">首页</van-tabbar-item>
-      <van-tabbar-item icon="search" >搜索</van-tabbar-item>
+      <van-tabbar-item icon="search">搜索</van-tabbar-item>
       <van-tabbar-item icon="chat" info="5">消息</van-tabbar-item>
       <van-tabbar-item icon="contact" dot>我</van-tabbar-item>
     </van-tabbar>
   </div>
-  
+
 </template>
 
 <script>
@@ -104,7 +107,7 @@ export default {
       wx.login({
         success: () => {
           wx.getUserInfo({
-            success: (res) => {
+            success: res => {
               this.userInfo = res.userInfo
             }
           })
@@ -113,7 +116,8 @@ export default {
     },
     clickHandle (msg, ev) {
       console.log('clickHandle:', msg)
-      this.$router.push({ path: '/pages/community/main', query: { id: msg } })
+      wx.navigateTo({ url: '/pages/community/main?id=' + msg })
+      // this.$router.push({ path: '/pages/community/main', query: { id: msg } })
     }
   },
   async mounted () {
@@ -123,25 +127,22 @@ export default {
     this.searchScrollLower()
     console.log(this.$route)
   },
-
-  created () {
-
-  }
+  created () {}
 }
 </script>
 
 
 <style lang="scss" scoped>
-.container{
-  padding-bottom:50px;
+.container {
+  padding-bottom: 50px;
 }
-.loading{
+.loading {
   text-align: center;
   font-size: 14px;
   padding: 10px 0;
   color: #999;
-  
-  span{
+
+  span {
     vertical-align: middle;
     padding-left: 8px;
   }
@@ -156,31 +157,29 @@ export default {
   border-bottom: 1rpx solid #ebebeb;
   font-size: 0;
 
-  .imgbox{
+  .imgbox {
     flex: 0 1 auto;
-    img{
+    img {
       width: 60px;
       height: 60px;
       border-radius: 50%;
     }
-
   }
 
-  .middle{
+  .middle {
     flex: 1 1 0%;
 
-    h4{
+    h4 {
       font-size: 16px;
       color: #666;
     }
 
-    .desc{
+    .desc {
       color: #999;
       font-size: 12px;
     }
-
   }
-  .to-right{
+  .to-right {
     flex: 0 1 auto;
     display: flex;
     align-items: center;
@@ -188,5 +187,4 @@ export default {
     color: #777;
   }
 }
-
 </style>

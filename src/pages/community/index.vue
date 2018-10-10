@@ -13,26 +13,28 @@
       </div>
     </div>
     <div class="list">
-      <van-panel class="box" title="测试正文1500" use-footer-slot>
-        <div class="content">啊啊啊啊啊啊啊啊啊，啊啊啊啊啊啊啊啊啊，啊啊啊啊啊啊啊啊啊，啊啊啊啊啊啊啊啊啊，啊啊啊啊啊啊啊啊啊，啊啊啊啊啊啊啊啊啊，啊啊啊啊啊...</div>
-        <div slot="footer">
-          <van-row>
-            <van-col span="3">
-              <img class="pic" src="http://jgbackend.oss-cn-shanghai.aliyuncs.com/test/community/headimg/deabfb5b71281c4b528db1b5f69b0c02.jpeg">
-            </van-col>
-            <van-col span="8">
-              <div class="nickname">痞子</div>
-              <div class="publish-time">07/04 14:30</div>
-            </van-col>
-            <van-col class="right" span="13">
-              <div class="small"><van-icon name="like-o" /><text>123</text></div>
-              <div class="small"><van-icon name="chat" /><text>12312</text></div>
-            </van-col>
 
-          </van-row>
-
-        </div>
-      </van-panel>
+      <template  v-for="(item,index) in topics">
+        <van-panel :key="index" class="box" :title="item.title" use-footer-slot>
+          <div class="content">{{item.content}}</div>
+          <div slot="footer">
+            <van-row>
+              <van-col span="3">
+                <img class="pic" :src="item.headimgurl">
+              </van-col>
+              <van-col span="8">
+                <div class="nickname">{{item.nickname}}</div>
+                <div class="publish-time">{{item.createTime}}</div>
+              </van-col>
+              <van-col class="right" span="13">
+                <div class="small"><van-icon name="like-o" /><text>{{item.like}}</text></div>
+                <div class="small"><van-icon name="chat" /><text>{{item.reply}}</text></div>
+              </van-col>
+            </van-row>
+          </div>
+        </van-panel>
+      </template>
+      
 
     </div>
     <!-- <view class="search">
@@ -76,9 +78,12 @@ export default {
   },
   data () {
     return {
-      topics: null,
-      info: null
+      topics: [''],
+      info: ['']
     }
+  },
+  onLoad (options) {
+    console.log(options)
   },
   async onPullDownRefresh () {},
   onReachBottom () {},
@@ -99,6 +104,7 @@ export default {
   mounted () {
 
   },
+
   created () {
     this.getInfo()
   }
@@ -170,6 +176,8 @@ export default {
 .list {
   .box {
     margin-bottom: 10px;
+    display:block;
+
     .pic {
       width: 30px;
       height: 30px;
